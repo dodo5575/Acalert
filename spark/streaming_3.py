@@ -64,7 +64,7 @@ def getSTD(item):
     avg = num / n
     baseLine[int(item[0])][0] = avg
     baseLine[int(item[0])][1] = std
-    print(baseLine)
+    #print(baseLine)
     return (item[0], (n, num, num2, std))
 
 
@@ -84,8 +84,8 @@ def anomaly(tuples):
         print(tuples, baseLine[key][0], baseLine[key][1])
         return tuples
 
-rdd0.map(anomaly)\
-    .pprint()
+#rdd0.map(anomaly)\
+#    .pprint()
 
 #users_dstream = parsed.map(lambda x: x[1])
 

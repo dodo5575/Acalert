@@ -1,5 +1,5 @@
 import os
-os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages org.apache.spark:spark-streaming-kafka-0-8_2.11:2.0.2 --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.2.0 pyspark-shell'
+os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.2.0 pyspark-shell'
 
 #    Spark
 from pyspark import SparkContext
@@ -11,11 +11,11 @@ from pyspark.streaming.kafka import KafkaUtils
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import explode
 from pyspark.sql.functions import split
-from pyspark.sql.functions import col, from_json
+from pyspark.sql.functions import col, from_json, udf, struct, window
 from pyspark.sql.types import *
 
 #    json parsing
-import json, math
+import json, math, datetime
 
 #sc = SparkContext(appName="PythonSparkStreamingKafka_RM_01")
 #sc.setLogLevel("WARN")
@@ -81,35 +81,73 @@ spark = SparkSession \
     .appName("StructuredNetworkWordCount") \
     .getOrCreate()
 
-df = spark \
-  .readStream \
-  .format("kafka") \
-  .option("kafka.bootstrap.servers", "localhost:9092") \
-  .option("subscribe", "test_data_json_2") \
-  .load()
-#df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
+df0 = spark \
+    .readStream \
+    .format("kafka") \
+    .option("kafka.bootstrap.servers", "ec2-34-208-235-111.us-west-2.compute.amazonaws.com:9092,ec2-52-42-210-151.us-west-2.compute.amazonaws.com:9092,ec2-34-214-141-162.us-west-2.compute.amazonaws.com:9092,ec2-35-165-131-139.us-west-2.compute.amazonaws.com:9092") \
+    .option("subscribe", "test_data_json_2") \
+    .load()
+#df1 = df0.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
+df1 = df0.selectExpr("CAST(value AS STRING)")
 
 #df.isStreaming() 
-df.printSchema()
+#df0.printSchema()
+
+def parse_json(df):
+    partition = str(json.loads(df[0])['partition'])
+    userid    = str(json.loads(df[0])['userid'])
+    time      = datetime.datetime.strptime(str(json.loads(df[0])['time']), "%Y-%m-%d %H:%M:%S")
+    xacc      = str(json.loads(df[0])['xacc'])
+    return [partition, userid, time, xacc]
+
 
 schema = StructType().add("partition", StringType()) \
-                     .add("userid", StringType())\
-                     .add("time", TimestampType())\
-                     .add("xacc", IntegerType())
+                     .add("userid"   , StringType())\
+                     .add("time"     , TimestampType())\
+                     .add("xacc"     , StringType())
+                     #.add("time"     , TimestampType())\
+                     #.add("xacc", IntegerType())
 
-df.select( \
-  col("key").cast("string"),
-  from_json(col("value").cast("string"), schema))
+udf_parse_json = udf(parse_json, schema)
 
-df.printSchema()
-print(df)
+df2 = df1.withColumn("parsed_field", udf_parse_json(struct([df1[x] for x in df1.columns]))) \
+                   .where(col("parsed_field").isNotNull()) \
+                   .withColumn("partition", col("parsed_field.partition")) \
+                   .withColumn("userid", col("parsed_field.userid")) \
+                   .withColumn("time", col("parsed_field.time")) \
+                   .withColumn("xacc", col("parsed_field.xacc"))
 
-query = df.select("userid")
 
-data = query.writeStream.outputMode("Append").format("console")
 
-data.start()
-data.awaitTermination()
+
+#df2 = df1.select( from_json(df1.value, schema).alias("json") )
+#df3 = df2.withColumn("partition", df2.json[0]) \
+#         .withColumn("userid", df2.json[1])\
+#         .withColumn("time", df2.json[2])\
+#         .withColumn("xacc", df2.json[3])
+
+#df1.printSchema()
+#df2.printSchema()
+#print(df.isStreaming)
+#print(df)
+
+#query = df.groupby("userid").count()
+#df = df.select('value')
+#type(query)
+
+#q0 = df2.writeStream.outputMode("Append").format("console").start()
+##print(query.lastProgress)
+##print(query.status)
+#q0.awaitTermination()
+
+df3 = df2.withWatermark("time", "10 seconds")\
+         .groupBy(
+         "userid",
+         window(df2.time, "10 seconds", "10 seconds"))\
+         .count()
+q1 = df3.writeStream.outputMode("Complete").format("console").start()
+q1.awaitTermination()
+
 
 #ssc.start()
 ##ssc.awaitTermination(timeout=180)
