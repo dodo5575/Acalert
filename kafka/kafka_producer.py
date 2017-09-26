@@ -12,7 +12,7 @@ producer = KafkaProducer(bootstrap_servers='localhost:9092')
 
 count = 0
 while True:
-    for userid_field in userNum:
+    for userid_field in range(int(userNum)):
         time= datetime.datetime.now() 
         time_field = time.strftime("%Y-%m-%d %H:%M:%S")
     
