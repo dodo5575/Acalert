@@ -9,11 +9,11 @@ from time import sleep
 NUM_SPAWNS = int(sys.argv[1])
 ID = int(sys.argv[2])
 
-nUsers = 1000
+nUsers = 200
 users_array = np.array(range(nUsers))
 subUser_array = np.array_split(users_array, NUM_SPAWNS)[ID]
 
-producer = KafkaProducer(bootstrap_servers='localhost:9092')
+producer = KafkaProducer(bootstrap_servers='ec2-34-214-188-4.us-west-2.compute.amazonaws.com:9092,ec2-52-42-208-185.us-west-2.compute.amazonaws.com:9092,ec2-35-163-245-197.us-west-2.compute.amazonaws.com:9092')
 
 count = 0
 while True:
@@ -23,7 +23,7 @@ while True:
         time_field = time.strftime("%Y-%m-%d %H:%M:%S")
     
         acc_field = np.random.randn()
-        if count % 1000 == 0:
+        if count % 333 == 0:
             acc_field += 10  # Add anomaly
 
         message_info = '{"userid": "%s", "time": "%s", "acc": "%s"}' % (userid_field, time_field, acc_field)
