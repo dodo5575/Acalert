@@ -1,23 +1,7 @@
-<html>
-<head>
-	<title>
-		Streaming anomaly
-	</title>
+{% extends "mybase.html" %} <!--this means that you are extending the base tempate -->
+{% block main %} <!-- this is the name of the block below -->
 
-	<!--<script src="https://d3js.org/d3.v4.min.js"></script>-->
-	<script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/1.1.0/sigma.min.js"></script>
-        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-
-        <!--CSS-->
-        <link rel="stylesheet" href="{{ url_for('static', filename='table.css') }}">
-
-</head>
-
-<body>
-
+ <h1>Accident Alert</h1>
 
 <table>
   <tr>
@@ -51,13 +35,6 @@
 -->
 <div id="chart1"></div>
 
+{% endblock %}
 
 
-</body>
-	<script type="text/javascript" src="{{ url_for('static', filename='rethinkDB.js') }}"></script>
-        <script type="text/javascript">
-          var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-        </script>
-	<script type="text/javascript" src="{{ url_for('static', filename='plot.js') }}"></script>
-
-</html>
