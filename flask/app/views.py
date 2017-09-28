@@ -63,12 +63,12 @@ def hello():
 
 @app.route('/api/<id>')
 def get_data(id):
-    stmt = "SELECT userid, time, acc FROM data WHERE userid=%s limit 25"
+    stmt = "SELECT userid, time, acc, mean, std FROM data WHERE userid=%s limit 25"
     response = session.execute(stmt, parameters=[int(id)])
     response_list = []
     for val in response:
         response_list.append(val)
-    jsonresponse = [{"userid": x.userid, "time": x.time, "acc": x.acc} for x in response_list]
+    jsonresponse = [{"userid": x.userid, "time": x.time, "acc": x.acc, "mean": x.mean, "std": x.std} for x in response_list]
     return render_template("index.html", data = jsonresponse) 
 
 @app.route('/_add_numbers')
@@ -76,12 +76,12 @@ def add_numbers():
     """Add two numbers server side, ridiculous but well..."""
     a = request.args.get('a', 0, type=int)
     b = request.args.get('b', 0, type=int)
-    stmt = "SELECT userid, time, acc FROM data WHERE userid=%s limit %s"
+    stmt = "SELECT userid, time, acc, mean, std FROM data WHERE userid=%s limit %s"
     response = session.execute(stmt, parameters=[a, b])
     response_list = []
     for val in response:
         response_list.append(val)
-    jsonresponse = [{"userid": x.userid, "time": x.time, "acc": x.acc} for x in response_list]
+    jsonresponse = [{"userid": x.userid, "time": x.time, "acc": x.acc, "mean": x.mean, "std": x.std} for x in response_list]
     return jsonify(result=jsonresponse)
 
 

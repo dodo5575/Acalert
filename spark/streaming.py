@@ -67,16 +67,16 @@ def sendRethink(rdd):
     rowRdd = rdd.map(lambda w: Row(userid=w[0], time=w[1], acc=w[2], mean=w[3], std=w[4], status=w[5]))
     d0 = spark.createDataFrame(rowRdd)
     d0 = d0.orderBy(d0.time.desc())
-    d0.show()
+    #d0.show()
     d1 = d0.filter(d0.status == 'danger')
     d1.show()
     complete_list = [row.userid for row in d0.select('userid').distinct().collect()]
     danger_list = [row.userid for row in d1.select('userid').distinct().collect()]
-    print(complete_list)
-    print(danger_list)
+    #print(complete_list)
+    #print(danger_list)
    
     status_list = [(ID, 'danger') if ID in danger_list else (ID, 'safe') for ID in complete_list]
-    print(status_list)
+    #print(status_list)
 
     
     conn = r.connect(host='ec2-54-70-66-115.us-west-2.compute.amazonaws.com', port=28015, db='test')
@@ -95,19 +95,26 @@ def sendRethink(rdd):
 
 
 def sendCassandra(iter):
-    cluster = Cluster(['ec2-35-162-98-222.us-west-2.compute.amazonaws.com'])
+    cluster = Cluster(['ec2-35-162-98-222.us-west-2.compute.amazonaws.com','ec2-54-148-202-236.us-west-2.compute.amazonaws.com', 'ec2-34-209-99-28.us-west-2.compute.amazonaws.com'])
     session = cluster.connect('playground')
 
     insert_statement = session.prepare("INSERT INTO data (userid, time, acc, mean, std, status) VALUES (?, ?, ?, ?, ?, ?)")
+
+    count = 0
     batch = BatchStatement(consistency_level=ConsistencyLevel.QUORUM)
-
-
+    
     for record in iter:
-        print(record[0], record[1], record[2], record[3], record[4], record[5])
+        #print(record[0], record[1], record[2], record[3], record[4], record[5])
         batch.add(insert_statement, (int(record[0]), record[1], float(record[2]), float(record[3]), float(record[4]), record[5]))
 
 
-    session.execute(batch)
+        # split the batch
+        count += 1
+        if count % 500 == 0:
+            session.execute(batch)
+            batch = BatchStatement(consistency_level=ConsistencyLevel.QUORUM)
+            
+
     session.shutdown()
 
 
@@ -117,8 +124,8 @@ def sendCassandra(iter):
 sc = SparkContext(appName="PythonSparkStreamingKafka_RM_01")
 sc.setLogLevel("WARN")
 
-ssc = StreamingContext(sc, 8)
-ssc.checkpoint("hdfs://ec2-34-208-235-111.us-west-2.compute.amazonaws.com:9000/user/checkpoint")
+ssc = StreamingContext(sc, 10)
+ssc.checkpoint("hdfs://ec2-52-36-29-48.us-west-2.compute.amazonaws.com:9000/user/checkpoint")
 
 kafkaStream = KafkaUtils.createDirectStream(ssc, ['data'], {"metadata.broker.list": "ec2-34-214-188-4.us-west-2.compute.amazonaws.com:9092,ec2-52-42-208-185.us-west-2.compute.amazonaws.com:9092,ec2-35-163-245-197.us-west-2.compute.amazonaws.com:9092"})
 #kafkaStream = KafkaUtils.createDirectStream(ssc, ['test_data_json_2'], {"metadata.broker.list": "localhost:9092", "auto.offset.reset": "smallest"})
@@ -129,11 +136,11 @@ parsed.count().map(lambda x:'Records in this batch: %s' % x).union(parsed).pprin
 
 #parsed.pprint()
 
-rdd0 = parsed.map(lambda x: (x['userid'], (x['acc'], x['time'])))
+rdd0 = parsed.map(lambda x: (x['userid'], (x['acc'], x['time']))).window(10,10)
 #rdd0.pprint()
 
 
-rdd1 = rdd0.window(8,8)\
+rdd1 = rdd0\
        .map(getSquared)\
        .reduceByKey(lambda a, b: (a[0] + b[0], a[1] + b[1], a[2] + b[2]))\
        .map(getAvgStd)
