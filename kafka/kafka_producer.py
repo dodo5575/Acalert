@@ -30,38 +30,44 @@ from time import sleep
 import config
 
 
-# number of users in the system
-nUsers = int(sys.argv[1])
-
-producer = KafkaProducer(bootstrap_servers = config.KAFKA_SERVERS)
-
-count = 0
-while True:
-
-    for userid_field in range(nUsers):
-        time= datetime.datetime.now() 
-
-        # There could be more than 1 record per user per second, so microsecond is added to make each record unique.
-        time_field = time.strftime("%Y-%m-%d %H:%M:%S %f")
+def main():
+    # number of users in the system
+    nUsers = int(sys.argv[1])
     
-        acc_field = np.random.randn() # generate random acceleration
-
-        if count % config.ANOMALY_PERIOD == 0:
-            acc_field += config.ANOMALY_VALUE  # Add anomaly
-
-        message_info = '{"userid": "%s", "time": "%s", "acc": "%s"}' \
-                       % (userid_field, time_field, acc_field)
+    producer = KafkaProducer(bootstrap_servers = config.KAFKA_SERVERS)
     
-        producer.send('data', message_info.encode('utf-8'))
+    count = 0
+    while True:
+    
+        for userid_field in range(nUsers):
+            time= datetime.datetime.now() 
+    
+            # There could be more than 1 record per user per second, so microsecond is added to make each record unique.
+            time_field = time.strftime("%Y-%m-%d %H:%M:%S %f")
+        
+            acc_field = np.random.randn() # generate random acceleration
+    
+            if count % config.ANOMALY_PERIOD == 0:
+                acc_field += config.ANOMALY_VALUE  # Add anomaly
+    
+            message_info = '{"userid": "%s", "time": "%s", "acc": "%s"}' \
+                           % (userid_field, time_field, acc_field)
+        
+            producer.send('data', message_info.encode('utf-8'))
+    
+            # In python3, there is no longer a limit to the maximum value of integers
+            count += 1
+    
+    
+    # block until all async messages are sent
+    producer.flush()
+    
+    # configure multiple retries
+    producer = KafkaProducer(retries=5)
 
-        # In python3, there is no longer a limit to the maximum value of integers
-        count += 1
+    return
 
 
-# block until all async messages are sent
-producer.flush()
-
-# configure multiple retries
-producer = KafkaProducer(retries=5)
-
+if __name__ == '__main__':
+    main()
 
