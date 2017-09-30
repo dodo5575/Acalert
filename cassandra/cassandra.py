@@ -9,13 +9,13 @@ session = cluster.connect('playground')
 #    print(user_row.id, user_row.date, user_row.fname)
 
 session.execute('DROP TABLE IF EXISTS data;')
-session.execute('CREATE TABLE data (userid int, time timestamp, xacc float, mean float, std float, status text, PRIMARY KEY (userid, time) ) WITH CLUSTERING ORDER BY (time DESC);')
+session.execute('CREATE TABLE data (userid int, time timestamp, acc float, mean float, std float, status text, PRIMARY KEY (userid, time) ) WITH CLUSTERING ORDER BY (time DESC);')
 
 
 
 #rows = session.execute('SELECT * FROM test')
 #for user_row in rows:
 #    print(user_row)
-#    print(user_row.id, user_row.time, user_row.xacc)
+#    print(user_row.id, user_row.time, user_row.acc)
 
 
