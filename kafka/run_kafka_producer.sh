@@ -3,5 +3,5 @@
 #######################################################
 
 
-python3 kafka_producer.py 100
+python3 kafka_producer.py 2000
 
