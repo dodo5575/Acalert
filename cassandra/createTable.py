@@ -1,3 +1,7 @@
+#######################################################
+# This script is for creating a table in cassandra    #
+#######################################################
+
 from cassandra.cluster import Cluster
 import config
 
