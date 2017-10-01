@@ -3,10 +3,23 @@
 #######################################################
 
 import rethinkdb as r
+import config
 
-conn = r.connect(host='localhost', port=28015, db='test')
+conn = r.connect(host=config.RETHINKDB_SERVER, \
+                 port=28015, \
+                   db=config.RETHINKDB_DB)
 
-r.db('test').table_drop('status').run(conn)
-r.db('test').table_create('status', primary_key='userid').run(conn)
+try:
+    r.db(config.RETHINKDB_DB)\
+     .table_drop(config.RETHINKDB_TABLE)\
+     .run(conn)
+
+except:
+    pass
+
+
+r.db(config.RETHINKDB_DB)\
+ .table_create(config.RETHINKDB_TABLE, primary_key=config.RETHINKDB_PRIMARYKEY)\
+ .run(conn)
 
 
