@@ -5,8 +5,11 @@ A data pipeline for saving lives
 ![screen_0](figs/screen_0.png)
 ![screen_1](figs/screen_1.png)
 
-[Live DEMO](http://www.acalert.stream/)
-[Project Slides](http://www.acalert.stream/slides)
+
+
+- [Live DEMO](http://www.acalert.stream/)
+- [Project Slides](http://www.acalert.stream/slides)
+- [DEMO vedio]()
 
 
 ## Motivation
@@ -22,7 +25,7 @@ For example, imagine we have real-time streaming data of user activities from we
 
 ![Image of pipeline](figs/pipe.png)
 
-I build the following pipeline. I have randomly generated data stream containing user id, time, and acceleration, simulating the data from users’ device. I used an ingestion engine, kafka, to receive the data stream. 
+So, I build the following pipeline. I have randomly generated data stream containing user id, time, and acceleration, simulating the data from users’ device. I used an ingestion engine, kafka, to receive the data stream. 
 Next, I use spark streaming to consume the data from kafka and perform the data processing. It does two tasks. One is calculating the window-average and window-standard-deviation for each user and each window. The other is taking the original data from each user and each window, compare them to the window-average and window-standard-deviation. Then, based on given criteria, flag a record as normal or anomaly. 
 All of the data will then be written into the cassandra database, including window-average and window-standard-deviation. 
 Then, a table which only contain the current status of each user is saved in a rethinkDB database. The reason to use a separate rethinkDB database is that, if there is any change in the status table, instead of doing a potentially time-consuming query, rethinkDB will automatically push the real-time update to the dashboard.
