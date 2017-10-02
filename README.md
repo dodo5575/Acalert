@@ -9,7 +9,6 @@ A data pipeline for saving lives
 
 - [Live DEMO](http://www.acalert.stream/)
 - [Project Slides](http://www.acalert.stream/slides)
-- [DEMO video]()
 
 
 ## Motivation
@@ -99,9 +98,14 @@ The directory tree is illustrated as the following:
     └── streaming.py
 ```
 
+###### Requirement
+[pegasus](https://github.com/insightdatascience/pegasus)
+
+
 ## Future work
 
-There are many future works to improve this project, if I have time. One would be to do more stress testing. For example, take down a node in the kafka cluster, spark cluster, or cassandra cluster and see how the pipeline react to those situation.
-Second, so far, all of the records in the data streaming are ordered. But, in reality, the records in the data stream could be unordered. Then, the stream processing will need to window based on event-time instead of arriving time. In that case, the spark streaming in the pipeline will need to be replaced with spark structured streaming.
-Finally, the criteria to detect anomaly currently is based only on window-average and window-standard-deviation. The ideal solution would be adding additional component to allow data scientist build a ML model and tune the parameters.
+There are many future works to improve this project.
+1. More stress testing. For example, take down a node in the kafka cluster, spark cluster, or cassandra cluster and see how the pipeline react to those situation.
+2. So far, all of the records in the data streaming are ordered. But, in reality, the records in the data stream could be unordered. Then, the stream processing will need to window based on event-time instead of arriving time. In that case, the spark streaming in the pipeline will need to be replaced with spark structured streaming.
+3. The criteria to detect anomaly currently is based only on window-average and window-standard-deviation. The ideal solution would be adding additional component to allow data scientist build a ML model and tune the parameters.
 
