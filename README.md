@@ -2,8 +2,11 @@
 
 A data pipeline for saving lives
 
-![Image of pipeline](figs/screen.png)
+![screen_0](figs/screen_0.png)
+![screen_1](figs/screen_1.png)
 
+[Live DEMO](http://www.acalert.stream/)
+[Project Slides](http://www.acalert.stream/slides)
 
 
 ## Motivation
