@@ -21,7 +21,7 @@ $(function() {
 
 
 function continuousQ() {
-    setInterval(call, 1000);
+    setInterval(call, 10000);
 };
 
 
@@ -45,7 +45,7 @@ function makePlotly( allRows ){
     var bound = [];
 
     // use regex to extract time information
-    var time_pattern = new RegExp("[0-9]{2}:[0-9]{2}:[0-9]{2} [0-9]{6}", "m");
+    var time_pattern = new RegExp("[0-9]{2}:[0-9]{2}:[0-9]{2}", "m");
 
     for (var i=0; i<allRows.length; i++) {
         row = allRows[i];
@@ -56,10 +56,11 @@ function makePlotly( allRows ){
 
         x.push( reMatch[0] );
         y.push( row['acc'] );
-
     }
     x = x.reverse();
     y = y.reverse();
+    mean = mean.reverse();
+    std  = std.reverse();
 
 
     // find the boundary between each window
@@ -89,9 +90,9 @@ function makePlotly( allRows ){
             // y-reference is assigned to the y-values
             yref: 'y',
             x0: x[bound[2*i]],
-            y0: mean[bound[2*i]] - 3 * std[bound[2*i]],
+            y0: mean[bound[2*i]] - 2 * std[bound[2*i]],
             x1: x[bound[2*i+1]],
-            y1: mean[bound[2*i]] + 3 * std[bound[2*i]],
+            y1: mean[bound[2*i]] + 2 * std[bound[2*i]],
             fillcolor: colors[i%4],
             opacity: 0.2,
             line: {
@@ -104,7 +105,7 @@ function makePlotly( allRows ){
     var layout = {
   
         shapes,
-        title: 'User ID '+$('input[name="a"]').val(),
+        title: 'User ID '+$('input[name="a"]').val()+' (refresh every 10 s)',
         yaxis: {
             title: 'Acceleration'
         }

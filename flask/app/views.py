@@ -1,27 +1,33 @@
-from flask import jsonify, request
-from flask import render_template
+from flask import jsonify, request, redirect, render_template
 from flask_socketio import SocketIO, emit
 import rethinkdb as r
 
+import sys
+sys.path.append('/home/ubuntu/flask/app')
+import config
+
 from app import app
 
-# importing Cassandra modules from the driver we just installed
 from cassandra.cluster import Cluster
 
 # setting up connections to cassandra
-cluster = Cluster(['ec2-35-162-98-222.us-west-2.compute.amazonaws.com','ec2-54-148-202-236.us-west-2.compute.amazonaws.com', 'ec2-34-209-99-28.us-west-2.compute.amazonaws.com'])
-session = cluster.connect('playground')
+cluster = Cluster(config.CASSANDRA_SERVERS)
+session = cluster.connect(config.CASSANDRA_NAMESPACE)
 
 
 # setting up to listen to rethinkDB
 socketio = SocketIO(app)
 
 def bg_rethink():
-    conn = r.connect(host="localhost", port=28015, db="test")
-    ccCursor = r.table("status").changes().run(conn)
+    conn = r.connect(host=config.RETHINKDB_SERVER, \
+                     port=28015, \
+                       db=config.RETHINKDB_DB)
+
+    ccCursor = r.table(config.RETHINKDB_TABLE).changes().run(conn)
     for cc in ccCursor:
         socketio.emit('components', {'data': cc}, json=True)
-        socketio.sleep(0.1)
+        socketio.sleep(0.001)
+
 
 thread = None
 @socketio.on('connect')
@@ -31,15 +37,15 @@ def connected():
     if thread is None:
         thread = socketio.start_background_task(target=bg_rethink)
 
+
 @socketio.on('disconnect')
 def disconnected():
     print('disconnected')    
+
     
 @app.route('/')
 def hello():
-    #return render_template("movingTrace.html")
     return render_template("index.html")
-
 
 
 @app.route('/_query')
@@ -52,8 +58,23 @@ def add_numbers():
     response_list = []
     for val in response:
         response_list.append(val)
-    jsonresponse = [{"userid": x.userid, "time": x.time.strftime("%Y-%m-%d %H:%M:%S %f"), "acc": x.acc, "mean": x.mean, "std": x.std, "status": x.status} for x in response_list]
+    jsonresponse = [{"userid": x.userid, 
+                       "time": x.time.strftime("%Y-%m-%d %H:%M:%S %f"), 
+                        "acc": x.acc, 
+                       "mean": x.mean, 
+                        "std": x.std, 
+                     "status": x.status} for x in response_list]
     return jsonify(result=jsonresponse)
+
+
+@app.route('/github')
+def github():
+    return redirect("https://github.com/dodo5575/Acalert")
+
+@app.route('/slides')
+def slides():
+    return redirect("https://drive.google.com/open?id=1GSehAzTXAU0JdmulQR1Vnmd3FLVfnhPH6Bj1TcgOkJQ")
+
 
 
 

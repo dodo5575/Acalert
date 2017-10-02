@@ -6,8 +6,8 @@ from tornado.web import FallbackHandler, RequestHandler, Application
 from app import app
 
 class MainHandler(RequestHandler):
- def get(self):
-   self.write("This message comes from Tornado ^_^")
+    def get(self):
+        self.write("This message comes from Tornado ^_^")
 
 tr = WSGIContainer(app)
 
@@ -17,5 +17,5 @@ application = Application([
 ])
 
 if __name__ == "__main__":
- application.listen(80)
- IOLoop.instance().start()
+    application.listen(80)
+    IOLoop.instance().start()
