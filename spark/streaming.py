@@ -47,6 +47,8 @@ from pyspark.streaming import StreamingContext
 # Kafka
 from pyspark.streaming.kafka import KafkaUtils
 from pyspark.sql import Row, SparkSession
+from pyspark.sql.window import Window
+from pyspark.sql.functions import rank, col
 import json, math, datetime
 
 # rethinkDB
@@ -109,21 +111,31 @@ def getStatusList(rdd):
     spark = getSparkSessionInstance(rdd.context.getConf())
 
     # convert RDD[String] to RDD[Row] to DataFrame
-    rowRdd = rdd.map(lambda w: Row(userid=w[0], time=w[1], acc=w[2], mean=w[3], std=w[4], status=w[5]))
+    rowRdd = rdd.map(lambda w: Row(userid=w[0], time=w[1], status=w[2]))
     complete_df = spark.createDataFrame(rowRdd)
-    complete_df = complete_df.orderBy(complete_df.time.desc())
+    complete_df.show()
 
     # get the dataframe with status 'danger'
     danger_df = complete_df.filter(complete_df.status == 'danger')
-    danger_df.show()
+
+    # get the latest 'danger' record for each user
+    danger_window = Window.partitionBy(danger_df['userid'])\
+                          .orderBy(danger_df['time'].desc())
+    dangerLatest_df = danger_df.select('*', rank().over(danger_window).alias('rank')) \
+                               .filter(col('rank') <= 1) 
 
     # get the complete list of user ID in this rdd
     completeID_list = [row.userid for row in complete_df.select('userid').distinct().collect()]
-    # get the list of user ID in danger in this rdd
-    dangerID_list   = [row.userid for row in   danger_df.select('userid').distinct().collect()]
+    # get the list of danger and safe user ID in this rdd
+    dangerID_list   = [row.userid for row in dangerLatest_df.select('userid').distinct().collect()]
+    safeID_list = list(set(completeID_list) - set(dangerID_list))
   
-    # create a list of (userid, status) tuple
-    status_list = [(ID, 'danger') if ID in dangerID_list else (ID, 'safe') for ID in completeID_list]
+    # get the status list of (userid, status, time) tuple from each group (safe and danger)
+    # The timestamps for the safe users are not needed
+    dangerStatus_list = [(row.userid, row.status, row.time.strftime("%Y-%m-%d %H:%M:%S %f")) for row in dangerLatest_df.collect()]
+    safeStatus_list = [(ID, 'safe', 'None') for ID in safeID_list]
+    status_list = dangerStatus_list + safeStatus_list  
+
     return status_list
 
 
@@ -136,7 +148,7 @@ def sendRethink(rdd):
     # create connection to rethinkDB database
     conn = r.connect(host = config.RETHINKDB_SERVER, port = 28015, db = config.RETHINKDB_DB)
 
-    batchRecord_list = [{'userid': record[0], 'status': record[1]} for record in status_list]
+    batchRecord_list = [{'userid': record[0], 'status': record[1], 'time': record[2]} for record in status_list]
 
     # insert into rethinkDB database, and replace the old record
     r.table(config.RETHINKDB_TABLE)\
@@ -214,10 +226,11 @@ def main():
 
     # label each record 'safe' or 'danger' by comparing the data with the window-avg and window-std    
     result_ds = joined_ds.map(labelAnomaly)
+    resultSimple_ds = result_ds.map(lambda x: (x[0], x[1], x[5]))
 
     # Send the status table to rethinkDB and all data to cassandra    
-    result_ds.foreachRDD(sendRethink)
     result_ds.foreachRDD(lambda rdd: rdd.foreachPartition(sendCassandra))
+    resultSimple_ds.foreachRDD(sendRethink)
     
     ssc.start()
     ssc.awaitTermination()
