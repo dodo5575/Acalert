@@ -23,7 +23,10 @@ def bg_rethink():
                      port=28015, \
                        db=config.RETHINKDB_DB)
 
-    ccCursor = r.table(config.RETHINKDB_TABLE).changes().run(conn)
+    ccCursor = r.table(config.RETHINKDB_TABLE)\
+                .filter(r.row['userid'] < 5)\
+                .changes().run(conn)
+
     for cc in ccCursor:
         socketio.emit('components', {'data': cc}, json=True)
         socketio.sleep(0.001)
