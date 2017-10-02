@@ -9,7 +9,7 @@ A data pipeline for saving lives
 
 - [Live DEMO](http://www.acalert.stream/)
 - [Project Slides](http://www.acalert.stream/slides)
-- [DEMO vedio]()
+- [DEMO video]()
 
 
 ## Motivation
@@ -31,6 +31,73 @@ All of the data will then be written into the cassandra database, including wind
 Then, a table which only contain the current status of each user is saved in a rethinkDB database. The reason to use a separate rethinkDB database is that, if there is any change in the status table, instead of doing a potentially time-consuming query, rethinkDB will automatically push the real-time update to the dashboard.
 Finally, I use flask to build the webUI. 
 With 2000 users and a 10 second window, my pipeline can handle 2000~3000 records per second.
+
+## Deployment
+
+The directory tree is illustrated as the following:
+
+```
+.
+├── README.md
+├── cassandra
+│   └── createTable.py
+├── figs
+│   ├── pipe.pdf
+│   ├── pipe.png
+│   ├── screen.pdf
+│   ├── screen.png
+│   ├── screen_0.png
+│   └── screen_1.png
+├── flask
+│   ├── app
+│   │   ├── __init__.py
+│   │   ├── static
+│   │   │   ├── css
+│   │   │   │   ├── bootstrap-theme.css
+│   │   │   │   ├── bootstrap-theme.css.map
+│   │   │   │   ├── bootstrap-theme.min.css
+│   │   │   │   ├── bootstrap-theme.min.css.map
+│   │   │   │   ├── bootstrap.css
+│   │   │   │   ├── bootstrap.css.map
+│   │   │   │   ├── bootstrap.min.css
+│   │   │   │   ├── bootstrap.min.css.map
+│   │   │   │   ├── button.css
+│   │   │   │   ├── ie10-viewport-bug-workaround.css
+│   │   │   │   ├── starter-template.css
+│   │   │   │   └── table.css
+│   │   │   ├── fonts
+│   │   │   │   ├── glyphicons-halflings-regular.eot
+│   │   │   │   ├── glyphicons-halflings-regular.svg
+│   │   │   │   ├── glyphicons-halflings-regular.ttf
+│   │   │   │   ├── glyphicons-halflings-regular.woff
+│   │   │   │   └── glyphicons-halflings-regular.woff2
+│   │   │   └── js
+│   │   │       ├── bootstrap.js
+│   │   │       ├── bootstrap.min.js
+│   │   │       ├── ie10-viewport-bug-workaround.js
+│   │   │       ├── movingTrace.js
+│   │   │       ├── npm.js
+│   │   │       ├── plot.js
+│   │   │       ├── rethinkDB.js
+│   │   │       └── socketwork.js
+│   │   ├── templates
+│   │   │   ├── aboutMe.html
+│   │   │   ├── base.html
+│   │   │   ├── index.html
+│   │   │   └── mybase.html
+│   │   └── views.py
+│   ├── run.py
+│   └── tornadoapp.py
+├── kafka
+│   ├── createTopic.sh
+│   ├── kafka_producer.py
+│   └── run_kafka_producer.sh
+├── rethinkDB
+│   └── createTable.py
+└── spark
+    ├── run_streaming.sh
+    └── streaming.py
+```
 
 ## Future work
 
