@@ -1,6 +1,7 @@
 # Acalert
 
-A data pipeline for saving lives
+A data pipeline for saving lives.
+This is my Insight Data Engineering Project 2017C.
 
 ![screen_0](figs/screen_0.png)
 ![screen_1](figs/screen_1.png)
@@ -32,6 +33,74 @@ Finally, I use flask to build the webUI.
 With 2000 users and a 10 second window, my pipeline can handle 2000~3000 records per second.
 
 ## Deployment
+
+### Directory structrue
+
+The directory tree of this github is illustrated as the following:
+
+```
+.
+├── README.md
+├── cassandra
+│   └── createTable.py
+├── figs
+│   ├── pipe.pdf
+│   ├── pipe.png
+│   ├── screen.pdf
+│   ├── screen.png
+│   ├── screen_0.png
+│   └── screen_1.png
+├── flask
+│   ├── app
+│   │   ├── __init__.py
+│   │   ├── static
+│   │   │   ├── css
+│   │   │   │   ├── bootstrap-theme.css
+│   │   │   │   ├── bootstrap-theme.css.map
+│   │   │   │   ├── bootstrap-theme.min.css
+│   │   │   │   ├── bootstrap-theme.min.css.map
+│   │   │   │   ├── bootstrap.css
+│   │   │   │   ├── bootstrap.css.map
+│   │   │   │   ├── bootstrap.min.css
+│   │   │   │   ├── bootstrap.min.css.map
+│   │   │   │   ├── button.css
+│   │   │   │   ├── ie10-viewport-bug-workaround.css
+│   │   │   │   ├── starter-template.css
+│   │   │   │   └── table.css
+│   │   │   ├── fonts
+│   │   │   │   ├── glyphicons-halflings-regular.eot
+│   │   │   │   ├── glyphicons-halflings-regular.svg
+│   │   │   │   ├── glyphicons-halflings-regular.ttf
+│   │   │   │   ├── glyphicons-halflings-regular.woff
+│   │   │   │   └── glyphicons-halflings-regular.woff2
+│   │   │   └── js
+│   │   │       ├── bootstrap.js
+│   │   │       ├── bootstrap.min.js
+│   │   │       ├── ie10-viewport-bug-workaround.js
+│   │   │       ├── movingTrace.js
+│   │   │       ├── npm.js
+│   │   │       ├── plot.js
+│   │   │       ├── rethinkDB.js
+│   │   │       └── socketwork.js
+│   │   ├── templates
+│   │   │   ├── aboutMe.html
+│   │   │   ├── base.html
+│   │   │   ├── index.html
+│   │   │   └── mybase.html
+│   │   └── views.py
+│   ├── run.py
+│   └── tornadoapp.py
+├── kafka
+│   ├── createTopic.sh
+│   ├── kafka_producer.py
+│   └── run_kafka_producer.sh
+├── rethinkDB
+│   └── createTable.py
+└── spark
+    ├── run_streaming.sh
+    └── streaming.py
+```
+
 
 ### Requirement
 [pegasus](https://github.com/insightdatascience/pegasus)
@@ -134,70 +203,6 @@ cd flask
 sudo nohup /home/ubuntu/anaconda3/bin/python3 tornadoapp.py &
 ```
 
-The directory tree of this github is illustrated as the following:
-
-```
-.
-├── README.md
-├── cassandra
-│   └── createTable.py
-├── figs
-│   ├── pipe.pdf
-│   ├── pipe.png
-│   ├── screen.pdf
-│   ├── screen.png
-│   ├── screen_0.png
-│   └── screen_1.png
-├── flask
-│   ├── app
-│   │   ├── __init__.py
-│   │   ├── static
-│   │   │   ├── css
-│   │   │   │   ├── bootstrap-theme.css
-│   │   │   │   ├── bootstrap-theme.css.map
-│   │   │   │   ├── bootstrap-theme.min.css
-│   │   │   │   ├── bootstrap-theme.min.css.map
-│   │   │   │   ├── bootstrap.css
-│   │   │   │   ├── bootstrap.css.map
-│   │   │   │   ├── bootstrap.min.css
-│   │   │   │   ├── bootstrap.min.css.map
-│   │   │   │   ├── button.css
-│   │   │   │   ├── ie10-viewport-bug-workaround.css
-│   │   │   │   ├── starter-template.css
-│   │   │   │   └── table.css
-│   │   │   ├── fonts
-│   │   │   │   ├── glyphicons-halflings-regular.eot
-│   │   │   │   ├── glyphicons-halflings-regular.svg
-│   │   │   │   ├── glyphicons-halflings-regular.ttf
-│   │   │   │   ├── glyphicons-halflings-regular.woff
-│   │   │   │   └── glyphicons-halflings-regular.woff2
-│   │   │   └── js
-│   │   │       ├── bootstrap.js
-│   │   │       ├── bootstrap.min.js
-│   │   │       ├── ie10-viewport-bug-workaround.js
-│   │   │       ├── movingTrace.js
-│   │   │       ├── npm.js
-│   │   │       ├── plot.js
-│   │   │       ├── rethinkDB.js
-│   │   │       └── socketwork.js
-│   │   ├── templates
-│   │   │   ├── aboutMe.html
-│   │   │   ├── base.html
-│   │   │   ├── index.html
-│   │   │   └── mybase.html
-│   │   └── views.py
-│   ├── run.py
-│   └── tornadoapp.py
-├── kafka
-│   ├── createTopic.sh
-│   ├── kafka_producer.py
-│   └── run_kafka_producer.sh
-├── rethinkDB
-│   └── createTable.py
-└── spark
-    ├── run_streaming.sh
-    └── streaming.py
-```
 
 
 
