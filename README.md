@@ -89,9 +89,50 @@ RETHINKDB_PRIMARYKEY = column for primary key
 ```
 6. Then, create a table in rethinkDB database with `rethinkDB/createTable.py`
 
+### Spark streaming
 
+1. Use pegasus to spin up a spark cluster with 4 m4.large nodes. 
+2. Use pegasus to install and start hadoop and spark.   
+3. Copy the `spark` folder in this github directory to the home directory of the master node of the spark cluster. And ssh to the master node.
+4. Install pyspark with:
+``` 
+conda install pyspark
+```
+5. Modify the configuration files in spark by following `spark/note.txt`.
+6. Create a `spark/config.py` file and add following lines with your value:
+``` 
+KAFKA_SERVERS       = public DNS and port of kafka servers
+CHECKPOINT_DIR      = check point folder for window process  
+ANOMALY_CRITERIA    = if abs(data - avg) > config.ANOMALY_CRITERIA * std,
+                      then data is an anomaly
+RETHINKDB_SERVER    = public DNS of the rethinkDB server
+RETHINKDB_DB        = name of the database in rethinkDB
+RETHINKDB_TABLE     = name of the table in rethinkDB
+CASSANDRA_SERVERS   = public DNS and port of cassandra servers
+CASSANDRA_NAMESPACE = namespace for cassandra
+```
+7. Then, you can submit your spark job by:
+```
+/usr/local/spark/bin/spark-submit --master spark://<master-hostname>:7077 --packages org.apache.spark:spark-streaming-kafka-0-8_2.11:2.0.2 streaming.py
+```
 
-
+### Flask
+1. Copy the `flask` folder in this github directory to the home directory of the node of the rethinkDB cluster. And ssh to the node.
+2. Install cassandra python driver as described in the cassandra session.
+3. Use pip to install flask_socketio module.
+4. Create a `flask/app/config.py` file and add following lines with your value:
+``` 
+RETHINKDB_SERVER    = public DNS of the rethinkDB server
+RETHINKDB_DB        = name of the database in rethinkDB
+RETHINKDB_TABLE     = name of the table in rethinkDB
+CASSANDRA_SERVERS   = public DNS and port of cassandra servers
+CASSANDRA_NAMESPACE = namespace for cassandra
+```
+5. Then, run the following command to start the webserver:
+```
+cd flask
+sudo nohup /home/ubuntu/anaconda3/bin/python3 tornadoapp.py &
+```
 
 The directory tree of this github is illustrated as the following:
 
