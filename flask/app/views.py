@@ -1,3 +1,16 @@
+############################################################
+# This is the main script for the flask server
+#
+# The parameters
+# RETHINKDB_SERVER    = public DNS of the rethinkDB server
+# RETHINKDB_DB        = name of the database in rethinkDB
+# RETHINKDB_TABLE     = name of the table in rethinkDB
+# CASSANDRA_SERVERS   = public DNS and port of cassandra servers
+# CASSANDRA_NAMESPACE = namespace for cassandra
+#
+# were written in a separate "config.py"
+############################################################
+
 from flask import jsonify, request, redirect, render_template
 from flask_socketio import SocketIO, emit
 import rethinkdb as r
@@ -15,7 +28,8 @@ cluster = Cluster(config.CASSANDRA_SERVERS)
 session = cluster.connect(config.CASSANDRA_NAMESPACE)
 
 
-# setting up to listen to rethinkDB
+# setting up to listen to rethinkDB,
+# Then, use socketio to emit to the client side javascript 
 socketio = SocketIO(app)
 
 def bg_rethink():
@@ -23,6 +37,8 @@ def bg_rethink():
                      port=28015, \
                        db=config.RETHINKDB_DB)
 
+
+    # Currently, the webUI only shows first 5 users
     ccCursor = r.table(config.RETHINKDB_TABLE)\
                 .filter(r.row['userid'] < 5)\
                 .changes().run(conn)
@@ -46,11 +62,12 @@ def disconnected():
     print('disconnected')    
 
     
+# the route for the main page
 @app.route('/')
 def hello():
     return render_template("index.html")
 
-
+# the route to execute the query
 @app.route('/_query')
 def add_numbers():
     """get the user id and number of points for query"""

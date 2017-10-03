@@ -1,4 +1,8 @@
 
+// Use anonymous function to submit form to flask 
+// for querying data from cassandra.
+// Then, receive the data from flask from cassandra
+// When the form is submitted, create a continuous query
 $(function() {
     var submit_form = function(e) {
         $.getJSON($SCRIPT_ROOT + '/_query', {
@@ -19,12 +23,13 @@ $(function() {
 });
 
 
-
+// This is the function that will continue to run at 10s interval.
 function continuousQ() {
     setInterval(call, 10000);
 };
 
 
+// This is the function that will actually do the query.
 function call() {
     $.getJSON($SCRIPT_ROOT + '/_query', {
         a: $('input[name="a"]').val(),
@@ -39,6 +44,7 @@ function call() {
 var colors = ['6600CC',	'FFCC00', '000000', 'CC0000']
 
 
+// This is the function that will take the data from cassandra and update the plot.
 function makePlotly( allRows ){
     var x = [], y = [], mean = [], std = [];
     var xBox = [], yBox = [];

@@ -94,9 +94,12 @@ The directory tree of this github is illustrated as the following:
 │   ├── createTopic.sh
 │   ├── kafka_producer.py
 │   └── run_kafka_producer.sh
+├── pegasus
+│   └── install_env.sh
 ├── rethinkDB
 │   └── createTable.py
 └── spark
+    ├── note.txt
     ├── run_streaming.sh
     └── streaming.py
 ```
