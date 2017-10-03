@@ -33,6 +33,30 @@ With 2000 users and a 10 second window, my pipeline can handle 2000~3000 records
 
 ## Deployment
 
+#### Requirement
+[pegasus](https://github.com/insightdatascience/pegasus)
+
+Install pegasus and replace 'pegasus/install/environment/install_env.sh' with the 'pegasus/install_env.sh' in this github directory.
+
+#### Kafka
+
+1. Use pegasus to spin up a kafka cluster with 3 m3.medium nodes. 
+2. Use pegasus to install and start zookeeper and kafka.   
+3. Copy the 'kafka' folder in this github directory to the home directory of the master node of the kafka cluster.
+4. Create a kafka topic with 'kafka/createTopic.sh'
+5. Install the python driver for kafka with:
+''' 
+pip install kafka-python
+'''
+6. Create a 'kafka/config.py' file and add following lines with your chosen value:
+''' 
+config.KAFKA_SERVERS  =  public DNS and port of the servers
+config.ANOMALY_PERIOD =  How often to create an outlier  
+config.ANOMALY_VALUE  =  The value to add to create an outlier
+'''
+7. Then, you can start to simulate data into kafka by running 'kafka/run_kafka_producer.sh'
+
+
 The directory tree is illustrated as the following:
 
 ```
@@ -98,8 +122,6 @@ The directory tree is illustrated as the following:
     └── streaming.py
 ```
 
-###### Requirement
-[pegasus](https://github.com/insightdatascience/pegasus)
 
 
 ## Future work
