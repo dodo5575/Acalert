@@ -87,7 +87,7 @@ RETHINKDB_DB         = name of the database (ex. test)
 RETHINKDB_TABLE      = name of the table (ex.status)
 RETHINKDB_PRIMARYKEY = column for primary key
 ```
-6. Then, create a table in rethinkDB database with `<rethinkDB/createTable.py>`
+6. Then, create a table in rethinkDB database with `rethinkDB/createTable.py`
 
 
 
