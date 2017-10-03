@@ -36,51 +36,51 @@ With 2000 users and a 10 second window, my pipeline can handle 2000~3000 records
 ### Requirement
 [pegasus](https://github.com/insightdatascience/pegasus)
 
-Install pegasus and replace 'pegasus/install/environment/install_env.sh' with the 'pegasus/install_env.sh' in this github directory.
+Install pegasus and replace `pegasus/install/environment/install_env.sh` with the `pegasus/install_env.sh` in this github directory.
 
 ### Kafka
 
 1. Use pegasus to spin up a kafka cluster with 3 m3.medium nodes. 
 2. Use pegasus to install and start zookeeper and kafka.   
-3. Copy the 'kafka' folder in this github directory to the home directory of the master node of the kafka cluster. And ssh to the master node.
-4. Create a kafka topic with 'kafka/createTopic.sh'
+3. Copy the `kafka` folder in this github directory to the home directory of the master node of the kafka cluster. And ssh to the master node.
+4. Create a kafka topic with `kafka/createTopic.sh`.
 5. Install the python driver for kafka with:
 ``` 
 pip install kafka-python
 ```
-6. Create a 'kafka/config.py' file and add following lines with your value:
+6. Create a `kafka/config.py` file and add following lines with your value:
 ``` 
 KAFKA_SERVERS  =  public DNS and port of the servers
 ANOMALY_PERIOD =  How often to create an outlier  
 ANOMALY_VALUE  =  The value to add to create an outlier
 ```
-7. Then, you can start to simulate data into kafka by running 'kafka/run_kafka_producer.sh'
+7. Then, you can start to simulate data into kafka by running `kafka/run_kafka_producer.sh`.
 
 ### Cassandra
 
 1. Use pegasus to spin up a cassandra cluster with 3 m3.medium nodes. 
 2. Use pegasus to install and start cassandra.   
-3. Copy the 'cassandra' folder in this github directory to the home directory of the master node of the cassandra cluster. And ssh to the master node.
+3. Copy the `cassandra` folder in this github directory to the home directory of the master node of the cassandra cluster. And ssh to the master node.
 4. Install the python driver for cassandra with:
 ``` 
 pip install cassandra-driver
 ```
-5. Create a 'cassandra/config.py' file and add following lines with your value:
+5. Create a `cassandra/config.py` file and add following lines with your value:
 ``` 
 CASSANDRA_SERVER    = public DNS and port of the servers
 CASSANDRA_NAMESPACE = the namespace in cassandra 
 ```
-6. Then, create a table in cassandra database with 'cassandra/createTable.py'
+6. Then, create a table in cassandra database with `cassandra/createTable.py`
 
 ### rethinkDB
 1. Use pegasus to spin up a rethinkDB node with 1 m4.large.
-2. Copy the 'rethinkDB' folder in this github directory to the home directory of the node of the rethinkDB cluster. And ssh to the master node.
+2. Copy the `rethinkDB` folder in this github directory to the home directory of the node of the rethinkDB cluster. And ssh to the master node.
 3. Install rethinkDB as described on the [offical website](https://rethinkdb.com/docs/install/ubuntu/): 
 4. Install the python driver for rethinkDB with:
 ``` 
 pip install rethinkdb
 ```
-5. Create a 'rethinkdb/config.py' file and add following lines with your value:
+5. Create a `rethinkdb/config.py` file and add following lines with your value:
 ``` 
 RETHINKDB_SERVER     = public DNS and port of the servers
 RETHINKDB_DB         = name of the database (ex. test) 
