@@ -9,7 +9,8 @@ This is my Insight Data Engineering Project 2017C.
 
 
 - [Live DEMO](http://www.acalert.stream/)
-- [Project Slides](http://www.acalert.stream/slides)
+- [Project Slides](https://drive.google.com/open?id=1GSehAzTXAU0JdmulQR1Vnmd3FLVfnhPH6Bj1TcgOkJQ)
+- [Project Video](https://youtu.be/ptfBstqCya0)
 
 
 ## Motivation
