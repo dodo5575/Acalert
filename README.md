@@ -8,7 +8,7 @@ This is my Insight Data Engineering Project 2017C.
 
 
 
-- [Live DEMO](http://www.acalert.stream/)
+- ~~Live DEMO~~ (The Insight program has ended, so does the AWS cluster.)
 - [Project Slides](https://drive.google.com/open?id=1GSehAzTXAU0JdmulQR1Vnmd3FLVfnhPH6Bj1TcgOkJQ)
 - [Project DEMO Video](https://youtu.be/ptfBstqCya0)
 
